@@ -1,0 +1,194 @@
+Self Introduction 
+
+01 July 2019
+
+Frank Sun
+Golang Developer
+elitegoblinrb@gmail.com
+http://elitegoblin.github.io
+
+* About myself
+
+My major interet are among building microservice using Golang, cloud architecture, distributed system.
+
+I am good at writing clean, well tested code; data structure design, object oriented programing. 
+
+I also like reading tech books, some of them are: AWS in action, Kuternetes in action, Agile Software Development: Principles, Patterns, and Practices, Concurrency in Go, Cryptography for Dummies, the docker book, prometheus up and running, Advanced Programming in Unix Environment, etc; non-tech books like: flow, deep working, micro habbits. 
+
+
+.link https://elitegoblin.github.io/archives/ My tech blogs
+.link https://elitegoblin.github.io/about/ Brownbag sessions I gave
+
+
+* Roadmap
+
+- Big picture of my skills
+- Golang
+- Microservice
+- Coding: clean code, TDD, data structures...
+- Software design: clean architecture, OOP
+- Knowledge sharing
+- Problem Solving/Debugging
+- Major Projects
+- Interests
+
+* Big picture
+
+.link https://atlas.mindmup.com/2019/06/560850109b3811e9a95e6f9337d0d4d4/frank_sun/index.html skills mindmap 
+
+.image images/big_pictures.png 500 _
+
+* Golang
+
+- Strong Golang skills: concurrency, config management, command line, logging, etc
+- Golang best practice: log tracing, error propagation, project architecture, metric
+
+I've read:
+.image images/concurrency_in_go.png 400 _
+
+* Golang
+
+A test I took about Golang: 
+.image images/golang.png 400 _
+
+* Mircoservice
+
+- Familliar with common components
+- Build call-center microservice in Udesk
+- Build private cloud automation microservice in Macquarie
+
+I have read:
+.image images/newman.png
+
+* Coding
+
+- Familiar with common data structure and algorithms(leetcode 150+)
+- Clean code: pursue bugfree, clean code
+- TDD: good for design and testing 
+
+I have read:
+.image images/clean_code.png
+
+* Software design
+
+* clean architecture
+
+- Single direction dependency
+- Layered approach, decoupling
+- Dependency Injection
+
+.image images/clean_architecture.png
+
+* Object Oriented Design
+
+- SOLID principle
+- Common design patterns
+
+I've read:
+.image images/design_patterns.png
+
+* Monitoring
+
+Demo I previously built using Prometheus + Grafana
+
+.image images/golang_exporter.gif _ 1000
+
+* Monitoring
+
+Netdata：a case for how I identify a prod issue using netdata
+
+.image images/netdata_issue1.png _ 800
+
+* Knowledge sharing/mentoring
+
+Read book, write blogs, brownbag sessions:
+
+- Go Project Layout - Clean Architecture
+- Microservice Monitoring
+- Concurrency in Go
+- Error propagation in Go
+- Log Tracing in Go
+- ORM or NoORM
+- Cache solution suggestion: dynamodb
+
+.link https://elitegoblin.github.io/about/ Talk List inside team
+
+* System Debugging
+
+- Broken connection pool
+- Unstable freeswitch
+- Service deadlock: acd, cti main event distributor hang
+- Memory leakage: http client body, robot cache
+
+I've read part of book(CPU, ):
+
+.image images/system_performance.png
+
+* Major Projects
+
+* Call center microservice
+
+- 25,000 sip phones registered, over 300k calls made daily
+
+.image images/call_center.png
+
+* Call center microservice: Version 1
+
+.image images/version_1.png
+
+* Call center microservice: Version 2
+
+.image images/API_GATEWAY.png _ 800
+
+* Call center microservice: Version 2
+
+- Multiple instance of CTI, ACD, ADS, Freeswitch..
+- Effort to make CTI stateless: store sip phone state to redis
+
+* CTI SIP phone managment module
+
+.image images/sip_management.png
+
+* Implement FSM to agency state
+
+.image images/acd_revised.png _ 400
+
+* ADS's priority queue for multi-task
+
+.image images/ads_priority.png _ 600
+
+* Faq robot cache sharding
+
+- 700k queries daily
+- Enable route different companies to seperate nodes
+- Node liveness detection
+
+.image images/robot_sharding.png
+
+* ADS forcast module
+
+- Implement Forecast formula 
+- Based on past 30 minutes data
+- Layered, msg based system
+- 2500+ lines, over 90% coverage, no bugs found 
+
+.image images/ads_forcast.png _ 400
+
+* Private cloud automation 
+
+.image images/private_cloud_automation.png
+
+Implement cross cutting functions: error propagation, log tracing, metric interface
+
+* Interests, plan
+
+- Distributed system
+- AWS certificate
+- Service mesh
+- Keep writing blogs...
+
+* Machine learning 
+
+I took Dr Andrew Ng's machine learning course: 
+
+.image images/machine_learning.png
