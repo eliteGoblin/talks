@@ -1,0 +1,37 @@
+DNS and service discovery in K8s
+24 Apr 2019
+
+Frank Sun
+Golang Developer
+elitegoblinrb@gmail.com
+http://elitegoblin.github.io
+
+* Roadmap
+
+- Customers of error handling(Why we need it)
+- Caller perspective: API error response
+- Developer perspective: how error propgate, structure error logs
+
+* Scope
+
+In scope: 
+
+- Error passing between services
+- Error propagation inside a service/process: between functions, go packages, go routines
+
+Out of scope: 
+
+- Panic handle
+
+* Customers of error handling
+
+- Caller of our API
+- Deveoper of service(Gophers)
+
+Reference
+
+.link https://www.linuxbabe.com/ubuntu/set-up-local-dns-resolver-ubuntu-18-04-16-04-bind9 How to Set Up a Local DNS Resolver on Ubuntu 18.04, 16.04 with BIND9  
+.link https://support.rackspace.com/how-to/using-dig-to-query-nameservers/ Use dig to query nameservers  
+.link https://aws.amazon.com/premiumsupport/knowledge-center/partial-dns-failures/ How does DNS work, and how do I troubleshoot partial DNS failures?  
+.link https://tools.ietf.org/html/rfc1034 DOMAIN NAMES - CONCEPTS AND FACILITIES  
+.link https://stackpointer.io/internet/get-authoritative-dns-for-domain/435/ How to Get Authoritative DNS for Domain
