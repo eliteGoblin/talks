@@ -1,5 +1,5 @@
-DNS and K8s Internal Service Discovery
-24 Apr 2019
+K8s Internal Service Discovery and DNS
+21 Oct 2019
 
 Frank Sun
 Golang Developer
@@ -8,15 +8,10 @@ http://elitegoblin.github.io
 
 * Goals
 
-- Understand how DNS works in K8s
+- Understand how DNS works in K8s(ClusterIP and Headless)
 - Understand DNS basic concepts and terminology
-- Know how CoreDNS works
+- Know how CoreDNS works in K8s
 - Understand a client request's full DNS life cycle
-
-
-* Roadmap
-
-- Service in K8s
 
 * Why we need DNS in K8s cluster
 
@@ -289,7 +284,7 @@ RR types:
 - CNAME: Maps a domain name (the alias) to another domain name (the canonical name)
 - NS: Names a name server (or DNS server) for a zone
 - PTR: Maps an IP address back to a domain name
-- SOA: Provides parameters for a zone
+- SOA: Provide summary information about a zone(only one SOA record per zone)
 
 * DNS Servers and Authority
 
@@ -330,23 +325,62 @@ A DNS server authoritative for nearmap.com, return S records if queried nearmap.
 We can use any node as our dns server, like Google Pulic DNS: 8.8.8.8
 
 Show DNS trace using dig: 
-
+  
+  sudo systemd-resolve --flush-caches
   dig +trace www.nearmap.com @8.8.8.8
 
-*  CoreDNS integration
+* Why a new DNS?
 
-TODO: It creates a watch on the Services and Endpoints resources, and caches that data.
+- Written in Go, plug-in style design
+- Big one like BIND(Berkeley Internet Name Domain) not suitable for k8s situations
+- Single container per instance, vs kube-dns which uses three
+- Better integration with Cloud(Route53)
+- CoreDNS enables negative caching in the default deployment
 
-- 解读CoreDNS配置
-- 提localDNS, 配合/etc/resolve.conf
+The short answer: basically anyone running Kubernetes, and most folks running containerized applications.
+
+* How CoreDNS works
+
+.image images/coredns.png _ 500
+
+CoreDNS creates a watch on the Services and Endpoints resources, and caches that data.
+
+* CoreDNS integration in our K8s cluster
+
+.code src/resolv.conf
+
+.image images/coredns_svc.png
+
+* Sample CoreDNS configuration
+
+.code src/coredns_config
+
+* Sample CoreDNS configuration
+
+- .:53: start a DNS server block for root domain and underneath
+- health plug-in exposes a health-check endpoint for the kubelet to monitor whether CoreDNS is alive and functioning
+- Kubernetes plug-in: format: kubernetes CLUSTER_DOMAIN REVERSE_CIDRS
+- Ustream: plug-in to resolve canonical name (CNAME) records
+- Forward: enable the forward plug-in for root zone("."), any queries received by this server that are not handled by an earlier plug-in will be forwarded.
+- Cache: 30s
+- loops: a defensive plug-in that is used to detect DNS query loops.
+- loadbalance: randomly shuffles A/AAAA records in the response
+- reload: reload config without restart CoreDNS(can be dangerous)
 
 
-Fig 6-1 显示框架图
+* Put it altogether: What happens when request is made
 
+* Request to K8s internal service
 
-The SOA record provides summary information about a zone; consequently, there’s only one SOA record per zone, and it must be attached to the domain name of the zone.
+Example request: 
+
+  http://tile-svc/v1/xxx
+
+.image images/internal_dns.png
 
 * A map browser request's journey
+
+Example request: 
 
   https://au-api.nearmap.com/tiles/v3/Vert/18/241180/157317.img   
 
@@ -354,11 +388,15 @@ The SOA record provides summary information about a zone; consequently, there’
 
 * Review
 
-- 之前问题
-- dns tools
+- Understand how DNS works in K8s
+- Understand DNS basic concepts: zone, domain, authority, RR records
+- Know how CoreDNS works in K8s
+- Understand a client request's full DNS life cycle
+- Use infoblox/dnstools(dig) to debug dns response
 
 * Reference
 
+.link https://www.oreilly.com/library/view/learning-coredns/9781492047957/ Learning CoreDNS
 .link https://www.linuxbabe.com/ubuntu/set-up-local-dns-resolver-ubuntu-18-04-16-04-bind9 How to Set Up a Local DNS Resolver on Ubuntu 18.04, 16.04 with BIND9  
 .link https://support.rackspace.com/how-to/using-dig-to-query-nameservers/ Use dig to query nameservers  
 .link https://aws.amazon.com/premiumsupport/knowledge-center/partial-dns-failures/ How does DNS work, and how do I troubleshoot partial DNS failures?  
@@ -366,4 +404,3 @@ The SOA record provides summary information about a zone; consequently, there’
 .link https://stackpointer.io/internet/get-authoritative-dns-for-domain/435/ How to Get Authoritative DNS for Domain  
 .link http://wsfdl.com/%E8%B8%A9%E5%9D%91%E6%9D%82%E8%AE%B0/2017/01/12/iptables_snat.html   同局域网下的 Iptables DNAT
 .link http://linux-ip.net/html/nat-dnat.html Destination NAT with netfilter 
-.link https://www.draw.io/#G1UKOt2OjhRwkA5B5SSAYyt1JvWnVSySAV TODO: remove 
