@@ -1,19 +1,25 @@
 K8s Internal Service Discovery and DNS
-21 Oct 2019
+23 Oct 2019
 
 Frank Sun
 Golang Developer
 elitegoblinrb@gmail.com
 http://elitegoblin.github.io
 
+
+* Why this session
+
+- what happened when http://tile-svc/v1/xxx
+- why we need DNS in K8s cluster
+- How DNS is setup in k8s
+- How is internal DNS work with external DNS
+
 * Goals
 
 - Understand how DNS works in K8s(ClusterIP and Headless)
 - Understand DNS basic concepts and terminology
 - Know how CoreDNS works in K8s
-- Understand a client request's full DNS life cycle
-
-* Why we need DNS in K8s cluster
+- Understand a request's DNS life cycle
 
 * Motivation of Service in K8s
 
@@ -196,10 +202,10 @@ Service with type: ExternalName
 
   ;; ANSWER SECTION:
   photosdb.auqa-api.svc.cluster.local. 7 IN CNAME	
-    survey-auqa-api.cxlnkyaqcgyh.ap-southeast-2.rds.amazonaws.com.
-  survey-auqa-api.cxlnkyaqcgyh.ap-southeast-2.rds.amazonaws.com. 7 IN CNAME
-    ec2-54-66-220-53.ap-southeast-2.compute.amazonaws.com.
-  ec2-54-66-220-53.ap-southeast-2.compute.amazonaws.com. 7 IN A 172.20.xx.xxx
+    survey-auqa-api.XXXXXX.ap-southeast-2.rds.amazonaws.com.
+  survey-auqa-api.XXXXXX.ap-southeast-2.rds.amazonaws.com. 7 IN CNAME
+    ec2-XX.XX.XX.XX.ap-southeast-2.compute.amazonaws.com.
+  ec2-XX.XX.XX.XX.ap-southeast-2.compute.amazonaws.com. 7 IN A 172.20.xx.xxx
 
 When we specify db url: 
 
@@ -367,7 +373,6 @@ CoreDNS creates a watch on the Services and Endpoints resources, and caches that
 - loadbalance: randomly shuffles A/AAAA records in the response
 - reload: reload config without restart CoreDNS(can be dangerous)
 
-
 * Put it altogether: What happens when request is made
 
 * Request to K8s internal service
@@ -385,6 +390,17 @@ Example request:
   https://au-api.nearmap.com/tiles/v3/Vert/18/241180/157317.img   
 
 .image images/request.png 500 _
+
+* A little bit on ingress object
+
+.image images/ingress.png _ 500
+
+* Ingress
+
+- Allows access to k8s services from outside, abstract Layer 7 routing rules
+- Compared to other methods: nodeport and loadbalancer, decouple, no extra host/ip needed
+
+.code src/ingress_rules.yaml
 
 * Review
 
@@ -404,3 +420,4 @@ Example request:
 .link https://stackpointer.io/internet/get-authoritative-dns-for-domain/435/ How to Get Authoritative DNS for Domain  
 .link http://wsfdl.com/%E8%B8%A9%E5%9D%91%E6%9D%82%E8%AE%B0/2017/01/12/iptables_snat.html   同局域网下的 Iptables DNAT
 .link http://linux-ip.net/html/nat-dnat.html Destination NAT with netfilter 
+.link https://matthewpalmer.net/kubernetes-app-developer/articles/kubernetes-ingress-guide-nginx-example.html Kubernetes Ingress with Nginx Example
