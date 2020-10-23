@@ -2,41 +2,89 @@
 
 a beginner's guide from microservice perspective  
 
-30 May 2020
+23 Oct 2020
 
 Frank Sun
 Golang Developer, API Team
 elitegoblinrb@gmail.com
 
-## About this session and myself
+## About this session
 
-Challenge in Microservice and comparison between solution with and without K8s
+Goal:
 
-Microservice experience in Udesk
+*  Explain why k8s in so useful in building microservice
+// As discussed with Simon, we want to bring more people's intrest into using k8s if they havn't do it yet. 
+// How individual will benefit from using it, save us from a lot a tedious work, also system more resilient; as a result, Nearmap will also benefit from it, increased performance and less service disruption.
+// Not just for microservice, we use it as a concrete example, as a goal, should help understand it. Better than just talk abstractly its benefit
+// Adam asked what k8s do and why we need it, I mentioned pod shceduling, not quite convicing.
+*  Get beginners somehow onboard with k8s
+// a couple of live demo contained
+// We are considering provide support while you learn and start to use k8s?
+
+## A bit about myself
+
+<img src="https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20201023144634.png" alt="20201023144634" style="width:850px"/>
+
+Tech stacks:
+
+*  Alibaba: c++, Linux as pet
+*  Udesk: golang, etcd, Nginx/OpenResty, AliCloud, Ansible
+*  Nearmap: golang, k8s, AWS(terraform), Argo...
+
+// In these 3 job arcoss 3 phase
+// monilith -> microservice: understand why and how to build microservice with a collection of opensource tools
+// Microservice on K8s: realized that before so much of my time wasted not using k8s, 
+//   1. No need to build our own service discovery infra(etcd) and related code.
+//   2. Release be so much easier, no downtime, release anytime.
 
 ## Roadmap
 
-// TODO: add Roadmap when all finished
-
-## What's not in this session
-
-*  Declarative syntax
-*  K8s all terminology in details
-
+*  Brife history & background of k8s
 // k8s build on docker, solve microservice problems, we need to know docker, k8s, and microservice; each itself is a big topic
 // Goal is understand what problems to solve, then understand why k8s
+*  Why Microservice
+// Microservice is our goal to build, and example, give us a real scenario helps us understand
+*  Why Docker
+// K8s build on docker, why the low level unit is Pod
+*  How k8s helps building Microservice, contains
+  
+  
+1.  Distribute workload over cluster nodes, automatically
+2.  Service discovery & Load balancing
+3.  Self-healing & scaling, automatically
+// survive app crash
+// when spike of request coming
+4.  Deploy new version
+// not build in CI/CD solution, deployment support, not hard to implement different deployment strategy, blue-green, canary, ...
+
+## What's not covered
+
+*  K8s objects other than: Pod, RelicaSet, Service, Deployment, HPA
+*  K8s internals, could be
+
+    1.  controller loop
+    2.  Service internal, CoreDNS 
+    3.  HA clusters
+    4.  pod network
+    ...
 
 ## What is Kubernetes
 
 Kubernetes (“koo-burr-NET-eez”) is originated from a Greek word, κυβερνήτης, meaning “helmsman” or “pilot.” 
 
+<img src="https://miro.medium.com/max/1225/1*6NVMEmo0qDcQjpXcXI8dtg.png" alt="drawing" width="600"/>
+
+## Definitions of Kubernetes
+
+// First we might want to try from get What is k8s from its definition
+
 Wikipedia    
 
-An open-source container-orchestration system for automating application deployment, scaling, and management.  It aims to provide a "platform for automating deployment, scaling, and operations of application containers across clusters of hosts"
+> An open-source container-orchestration system for automating application deployment, scaling, and management.  It aims to provide a "platform for automating deployment, scaling, and operations of application containers across clusters of hosts"
 
 Kubernetes.io    
 
-Kubernetes is a portable, extensible, open-source platform for managing containerized workloads and services, that facilitates both declarative configuration and automation. 
+> Kubernetes is a portable, extensible, open-source platform for managing containerized workloads and services, that facilitates both declarative configuration and automation. 
 
 ## What is Kubernetes
 
@@ -51,24 +99,30 @@ Kubernetes is the your computing cluster's operating system.
 
 // Analogy, let's see the different with traditional OS
 
-## Linux as an OS example
+## Compared to Linux as an OS
 
 OS manages computer hardware, software resources, and provides common services for computer programs.
 
-// ![20200531115737](https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20200531115737.png)
-
 We use Linux's abstraction to manage machine(single) resources:
 
--  Disk: File, Directory
--  Runtime: Process: fork, wait, exec, groups
--  Inside Process: Thread: pthread, mutex, locks
--  Network: Sockets
+-  Disk, IO: as file
+-  CPU, memory, Runtime: as Process
+-  Network device: as file
 
-Abstract computer resource(single) as Linux terminology
+*  Abstract physical resource(single node) as Linux terminology
+*  Features based on Linux terminology: Directory Mount, Process scheduling, Sockets, Process/Thread: features pthread, mutex, locks
+*  Developer interface: Linux API
+
+K8s comparison: 
+*  Abstract computing instance and deploy unit into: node and pod(like process in Linux)
+*  Features provided: ReplicaSet, Service, Deployment
+*  Developer interface: API server
+
+// 这节感觉比较啰嗦
 
 ## Kubernetes as cluster OS
 
-![20200531124003](https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20200531124003.png)
+<img src="https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20201023165424.png" alt="20201023165424" style="width:1000px"/>
 
 ## Kubernetes as cluster OS
 
@@ -95,7 +149,7 @@ We need to talk in K8s terminology:
 - **Pod**: basic running unit, like process in Linux 
 - **Replicate Set**: group of identical pods(replicas)
 - **Service**: reverse proxy/load balancer, like Nginx 
-- Deployments
+- **Deployments**
 - Daemon Set
 - Job
 - Secrets and configMap
@@ -103,12 +157,6 @@ We need to talk in K8s terminology:
 
 // Pod (unbreakable unit when deploy and run), 约等于contfainer
 // It provide useful functions when building micro-service
-
-## Why named Pod?
-
-Pod is a social group of whales, means group of containers
-
-<img src="https://cdn.vox-cdn.com/thumbor/YiSPuNNVjUhKnYPpqzVinwYCRK8=/1400x1400/filters:format(png)/cdn.vox-cdn.com/uploads/chorus_asset/file/11422405/Docker_logo_011.png" alt="drawing" width="600"/>
 
 ## K8s architecture
 
@@ -207,6 +255,12 @@ Container images bundle a program and its dependencies into a single artifact.
 
 // everbright bank story: depend on same version of redis-cli, sql driver
 // Isolation: share house and studio, buckhead
+
+## Why named Pod?
+
+Pod is a social group of whales, means group of containers
+
+<img src="https://cdn.vox-cdn.com/thumbor/YiSPuNNVjUhKnYPpqzVinwYCRK8=/1400x1400/filters:format(png)/cdn.vox-cdn.com/uploads/chorus_asset/file/11422405/Docker_logo_011.png" alt="drawing" width="600"/>
 
 ## Resource request and limit in docker container
 
@@ -418,7 +472,7 @@ Get a stable IP:
 k8s-talks.k8s-talks.svc.cluster.local.	28	IN	A	10.3.252.70
 ```
 
-## Release new version
+## Deploy new version
 
 Now you have a app running in K8s: 
 
