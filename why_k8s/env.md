@@ -17,7 +17,7 @@ gcloud config set compute/zone australia-southeast1-a
 
 重建cluster
 ```
-gcloud container clusters create k8s-talks --num-nodes=3 --enable-autoscaling --min-nodes=3 --max-nodes=5
+gcloud container clusters create k8s-talks --num-nodes=3 --enable-autoscaling --min-nodes=3 --max-nodes=3
 # 设置kubectl, gcloud赋予其credential
 gcloud container clusters get-credentials k8s-talks
 ```

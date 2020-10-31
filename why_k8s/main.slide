@@ -48,14 +48,14 @@ Tech stacks:
 // K8s build on docker, why the low level unit is Pod
 *  How k8s helps building Microservice, contains
   
-  
-1.  Distribute workload over cluster nodes, automatically
-2.  Service discovery & Load balancing
-3.  Self-healing & scaling, automatically
-// survive app crash
+1.  Schedule workload over cluster nodes, automatically
+2.  Self-healing, resilience
+// survive app crash, node failure
 // when spike of request coming
+3.  Service discovery & Load balancing
 4.  Deploy new version
 // not build in CI/CD solution, deployment support, not hard to implement different deployment strategy, blue-green, canary, ...
+5.  Linearly scaling with workload automatically
 
 ## What's not covered
 
@@ -101,39 +101,30 @@ Kubernetes is the your computing cluster's operating system.
 
 ## Compared to Linux as an OS
 
-OS manages computer hardware, software resources, and provides common services for computer programs.
+OS manages computer low-level resources, provides upper level for computer programs.
 
-We use Linux's abstraction to manage machine(single) resources:
+Linux manage single machine resources: CPU, memory; Disk, IO device; Network device
 
--  Disk, IO: as file
--  CPU, memory, Runtime: as Process
--  Network device: as file
-
-*  Abstract physical resource(single node) as Linux terminology
-*  Features based on Linux terminology: Directory Mount, Process scheduling, Sockets, Process/Thread: features pthread, mutex, locks
+*  Provide service in application level: Process/thread scheduling, memory management; Socket; File service;
 *  Developer interface: Linux API
 
-K8s comparison: 
-*  Abstract computing instance and deploy unit into: node and pod(like process in Linux)
-*  Features provided: ReplicaSet, Service, Deployment
-*  Developer interface: API server
+K8s manage resource across multiple nodes(e.g 3 nodes, 10CPU, 43G mem)
+*  Features provided: Workload scheduleing(both CPU & memory), ReplicaControl, Service Discovery, Pod Virtual Network, Deployment, Storage 
+*  Application interface: API server
 
-// 这节感觉比较啰嗦
 
 ## Kubernetes as cluster OS
 
-<img src="https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20201023165424.png" alt="20201023165424" style="width:1000px"/>
+<img src="https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20201023165424.png" alt="20201023165424" style="width:850px"/>
 
 ## Kubernetes as cluster OS
 
-Linux as OS provide POSIX API for writing application running on single computer
 K8s as OS provide useful API for building microservice system on cluster: 
 
 - **Workloads scheduling**
+- **Self-healing, Scaling**
 - **Service discovery, Load balancing**
 - **Automated rollouts and rollbacks**
-- **Self-healing**
-- **Scaling**
 - Storage orchestration
 - Secret and configuration management
 
@@ -145,106 +136,129 @@ K8s makes building Microservice much easier!
 
 We need to talk in K8s terminology: 
 
-- Node: a single computer
-- **Pod**: basic running unit, like process in Linux 
+- Node: a single computing instance
+- **Pod**: basic deploy/running unit, like process in Linux
 - **Replicate Set**: group of identical pods(replicas)
-- **Service**: reverse proxy/load balancer, like Nginx 
-- **Deployments**
+- **Service**: reverse proxy/load balancer, group your pod, like Nginx 
+- **Deployments**: rolling update 
 - Daemon Set
 - Job
 - Secrets and configMap
 - Volume
 
-// Pod (unbreakable unit when deploy and run), 约等于contfainer
+// Pod (unbreakable unit when deploy and run), can think of equal contfainer
 // It provide useful functions when building micro-service
 
 ## K8s architecture
 
-![20200531215220](https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20200531215220.png)
+<img src="https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20201023165424.png" alt="20201023165424" style="width:850px"/>
 
-// Human use kubectl to access apiserver
-
-ETCD: Phonebook of all services(imagine you lost all your contact, WFH and slack down)
-
-## K8s architecture
-
-![k8s](https://d33wubrfki0l68.cloudfront.net/7016517375d10c702489167e704dcb99e570df85/7bb53/images/docs/components-of-kubernetes.png)
-![architecture](https://www.tutorialspoint.com/kubernetes/images/cluster_architecture.jpg)
+// Human use API or kubectl to access apiserver; User access service via IP addr
+// ETCD: persist state data, create whole cluster with Phonebook of all services(imagine you lost all your contact, WFH and slack down)
 
 ## K8s History and Jobs Trend
 
-*  v0.4 20 Nov 2014
-*  v1.0  2 Jun 2016
-*  v1.18 Now
+<img src="https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20201024113730.png" alt="20201024113730" style="width:800px"/>
+
+*  Initial release: 7  June 2014
+*  v1.0:            10 July 2015
+
+Original author: Google, heavily influenced by its Borg system
+
+## K8s Jobs Trend
+
+Some data from internet:
 
 Between October 2015 and October 2019, the share of Kubernetes job searches increased by **2,125%**.  Kubernetes-related jobs per million also grew by **2,141%** in that same time period,
 
-From: [Kubernetes in 2020](https://www.beseen.com/blog/talent/kubernetes-career-trends/)
+Also interesting, LinkedIn 2020 Emerging Jobs Report:
 
-Also interesting
-[2020 Emerging Jobs Report](https://business.linkedin.com/content/dam/me/business/en-us/talent-solutions/emerging-jobs-report/Emerging_Jobs_Report_U.S._FINAL.pdf)
+[US](https://business.linkedin.com/content/dam/me/business/en-us/talent-solutions/emerging-jobs-report/Emerging_Jobs_Report_U.S._FINAL.pdf)  
+[AU](https://business.linkedin.com/content/dam/me/business/en-us/talent-solutions/emerging-jobs-report/AUS-TOP-EMERGING-JOBS_compressedRevised.pdf)
 
-## K8s Jobs Trend: Employer's Interest
+SRE ranked 5th in Both AU and US, Requirement
 
-// buyer
-From 2018 to 2019, the share of Kubernetes jobs per million rose 53.33%
+## K8s Jobs Trend continued
 
-<img src="https://www.beseen.com/wp-content/uploads/2020/01/Employer-interest-in-Kubernetes-roles-over-time.png" alt="drawing" width="600"/>
+*  US: AWS, Ansible, Kubernetes, Docker, Terraform
+*  AU: AWS, Linux, Go, DevOps, Docker
 
-## K8s Jobs Trend: Job Seeker's Interest
+From LinkedIn job search trend: 
 
-// seller
+From 2018 to 2019, the share of Kubernetes jobs per million rose 53.33%  
 From 2018 to 2019, the share of Kubernetes job searches saw a mere .85% gain.
 
-<img src="https://www.beseen.com/wp-content/uploads/2020/01/Job-seeker-interest-in-Kubernetes-roles-over-time.png" alt="drawing" width="600"/>
+Seems still a seller's market 
 
-## Microservice, what and why
+## Microservice, and why
 
-Microservice is an architectural style that structures an application as a collection of services that are.
+Microservice is an architectural style that structures an application as a collection of services working together.
 
 // We need to first understand challenges in microservice then can understand how to compare solution with/without k8s
 
-Small, and Focused on Doing One Thing Well
+A distributed system, collection of service which is small, and focused on **Doing One Thing Well**
 
-- Resilience: buckhead, failure doesn’t cascade
-- Scaling: Monolithic service has to scale everything together
+Benefit: decouple 
+// Quality of architecture is how good you decouple your system
+
+- Scaling separately; Monolithic service has to scale everything together
 - Deployment separately
+- Resilience: failure doesn’t cascade, gracefully degradation(e.g. when suggestion service down, still get most popular items)
 - Technology Heterogeneity
 - Optimizing for Replaceability/Refactoring
-- Organizational Alignment: smaller team to manage smaller service; Conway's law
 
-// US only need to scale sales/marketing, not much engineer/tech
-// Because of one fail part(only if we do it right)
-// Any organization that designs a system (defined broadly) will produce a design whose structure is a copy of the organization's communication structure.
+Organizational Alignment: smaller team to manage smaller service; 
+
+// Conway's law: Any organization that designs a system (defined broadly) will produce a design whose structure is a copy of the organization's communication structure.
+
+// e.g: US only need to scale sales/marketing, not much engineer/tech
 
 ## Challenges of Microservice
 
-- Deployment, Resource planning
-- High availability(HA)
+Mainly come from: we break a system to many pieces. 
+
+<img src="https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20201024121824.png" alt="20201024121824" style="width:200px"/> 
+
+<img src="https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20201024121958.png" alt="20201024121958" style="width:200px"/>
+
+## Challenges of Microservice
+
+- Resource planning
+- High availability(HA): pod fail, node fail
+- Scaling linearly with workloads
 - Service Discovery
-- Release: Automated rollouts and rollbacks with zero-downtime
-- Scaling
+- Release new version: Automated rollouts and rollbacks with zero-downtime
 
-// Kubernetes as cluster OS
+## We build Microservice in API team
 
-## API team's Microservice architecture
+1.  coverage
+2.  tiles
+3.  sourcephotos  
+  
+Internally:  
 
-// What happens behind the scene of Map browser
 
-Intenal service:
-*  Areas
-*  Transactions
+1.  area
+2.  transaction
+3.  tilesprocess
+
+Demo: what happen behind the scence when user open mapbrowser
 
 ## Containerize and docker
 
-Running software in containers for isolation: Docker in Action, 1.1.3 图?
+Running software in containers for isolation:
+
+<img src="https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20201024122552.png" alt="20201024122552" style="width:900px"/>
+
+## Benefit
 
 - **Self-contained, isolation**: isolated process and network
 - **Resource requirement**
 - Lightweight
 - Portable
 
-Container images bundle a program and its dependencies into a single artifact.
+Container images bundle a program and its dependencies into a single artifact;
+Build once, running everywhere.
 
 //  all of these programs share the same versions of shared libraries on the system
 // Isolated process in Linux
@@ -258,80 +272,86 @@ Container images bundle a program and its dependencies into a single artifact.
 
 ## Why named Pod?
 
-Pod is a social group of whales, means group of containers
+Pod: a social group of whales
 
-<img src="https://cdn.vox-cdn.com/thumbor/YiSPuNNVjUhKnYPpqzVinwYCRK8=/1400x1400/filters:format(png)/cdn.vox-cdn.com/uploads/chorus_asset/file/11422405/Docker_logo_011.png" alt="drawing" width="600"/>
+<img src="https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20201024122936.png" alt="20201024122936" style="width:250px"/>
 
-## Resource request and limit in docker container
+Docker container: Whale
 
-*  Resources: CPU, memory, GPU
-*  Requests means reserve, are what the container is guaranteed to get
-*  Limits, make sure a container never goes above a certain value
-// CPU limit, memory limit
+<img src="https://cdn.vox-cdn.com/thumbor/YiSPuNNVjUhKnYPpqzVinwYCRK8=/1400x1400/filters:format(png)/cdn.vox-cdn.com/uploads/chorus_asset/file/11422405/Docker_logo_011.png" alt="drawing" width="250"/>
 
-[Request, Limit), or Request <= RuntimeResource < Limit
+Pod = Group of whales = Group of docker container 
 
-```go
-docker run -it --cpus=".5" ubuntu /bin/bash
+## Demo environment
+
+*  K8s Platform: Google Kubernetes Engine(GKE)
+*  Client Tools: gcloud, kubectl(binaries)
+
+<img src="https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20201023165424.png" alt="20201024122936" style="width:500px"/>
+
+## Init demo environment
+
+Create k8s cluster in GKE:
+
 ```
-*  1m CPU = 1 / 1000 Core (mili-core)
-*  1m Memory = 1 Medibyte(megabyte)
+gcloud init --skip-diagnostics
+gcloud config set compute/region australia-southeast1
+gcloud config set compute/zone australia-southeast1-a
+gcloud container clusters create k8s-talks --num-nodes=3 --enable-autoscaling --min-nodes=3 --max-nodes=3
+```
 
-Generally, you should do resource planning before deploy: specify resource request and limit
+Use kubectl to test if cluster up
 
-// millicores. If your container needs two full cores to run, you would put the value “2000m”
-//  If your app starts hitting your CPU limits, Kubernetes starts throttling your container. This means the CPU will be artificially restricted, giving your app potentially worse performance! However, it won’t be terminated or evicted
-
-//  mebibyte 2^20
-// , if a container goes past its memory limit it will be terminated.
-
-//  it’s important that the containers have enough resources to actually run
-
-## Demo env
-
-*  Gcloud
-*  Kubectl: -v 6, 显示rest API server request
-
-// 画图表示, gcloud, Google Cloud API; Kubectl K8s APIServer (需要depend: k8s大致结构图)
+config file in `$HOME/.kube/config`
+```
+gcloud container clusters get-credentials k8s-talks
+kubectl config get-contexts
+kubectl get nodes -v 6
+```
 
 ## Deployment, Resource planning
 
-Scenario: task to deploy the new Microservice to cloud
+Scenario: task to deploy the new Microservice to cloud.   
+Services and replicas: A(3), B(5), C(2), D(2)
 
 *  How many ec2 instance you need?
 *  How should you arrange the service in different ec2(nodes)?
 
-![20200614133437](https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20200614133437.png)
+What's your Microservice finally looks like on cloud after deployment?
 
-Containerize, resource planning
+## Resource planning
 
-## Problem abstract:
+How you gonna put your stuff(service) in to box(computing instance)?
 
-![20200614133215](https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20200614133215.png)
+<img src="https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20201031143738.png" alt="20201031143738" style="width:800px"/>
+
+## Example from API team
 
 // real resource request/limit
-*  Tile CPU 2.5/3.5 13G/14G
-*  Coverage 1.5/6.5 8G/20G
-*  Area 100m/100Mi; 250m/250Mi
+*  Tile CPU 2.5/3.5 13G/14G, 3 replicas
+*  Coverage 1.5/6.5 8G/20G, 2 replicas
+*  Area 100m/100Mi; 250m/250Mi, 4 replicas
 
-## Do it manually
+<img src="https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20201031144322.png" alt="20201031144322" style="width:500px"/>
+
+## Do it manually (Consider Memory only)
+
+<img src="https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20201031145507.png" alt="20201031145507" style="width:600px"/>
 
 *  Randomly pick one node that meet resource requirement
 *  Good to have same service instance on different nodes.
 
-//　手动schedule的结果
+## Cons of manually scheduling
 
-## Proxy
-
-Create a proxy to remote Pods
-// Kubectl proxy save your trouble to put request credential because kubectl already has it.
-![20200705211742](https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20200705211742.png)
+*  Tedious, consider 200+ service replicas, need a intelligent algorithm to help
+*  Hard to keep track of real state of deploying: different nodes has different state, pets
+*  Very difficult to cope with changing load
 
 ## K8s Resource plan, Schedule Demo
 
 // k8s 自动部署, pod by pod, 先别考虑replica, replica放在resilience中. 
 
-// run 3 pods
+deploy 3 pods
 ```
 kubectl run --restart=Never --image=gcr.io/kuar-demo/kuard-amd64:green
 ```
@@ -341,14 +361,16 @@ kubectl proxy
 docker run -it --net=host hjacobs/kube-ops-view
 ```
 
-## How k8s handle Resource go over limit
+<img src="https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20201031145645.png" alt="20201031145645" style="width:500px"/>
+
+// Possible question: what if Pod not specify limit and How k8s handle Resource go over limit
 // Let’s imagine a scenario where we have a machine that is running out of memory. What will Kubernetes do?
 
 //  If your Pod’s containers have no requests, then by default they are using more than they requested, so these are prime candidates for termination
 // Other prime candidates are containers that have gone over their request but are still under their limit.
 // If Kubernetes finds multiple pods that have gone over their requests, it will then rank these by the Pod’s priority, and terminate the lowest priority pods first.
 
-https://cloud.google.com/blog/products/gcp/kubernetes-best-practices-resource-requests-and-limits
+// https://cloud.google.com/blog/products/gcp/kubernetes-best-practices-resource-requests-and-limits
 
 ## High Availability
 
@@ -378,33 +400,42 @@ ReplicaSet: create a group of exactly same pods
 kubectl get pods
 kubectl delete pod kuard-lfwjq
 kctl delete pods -l app=kuard
+kubectl scale --replicas=5 rs/kuard
 ```
+
+<img src="https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20201031145645.png" alt="20201031145645" style="width:500px"/>
 
 // Controller loop: non-terminating loop that regulates the state of a system
 // Object have a spec field that represents the desired state
 
+// teardown 1 node, see what happens, ssh/browser into GCP node and restart/teardown
+
 ## Relicateset review
 
-*  Redundancy: Multiple running instances mean failure can be tolerated.
+*  Redundancy: Multiple running instances mean more failure can be tolerated.
 *  Scale: Multiple running instances mean that more requests can be handled.
 
 ## Another view of K8s: the object store
 
-*  Most concept has an underlying object, defined by yaml: CRUD
+*  Most concept has an underlying object, defined by yaml
 *  Declarative
-*  Loose couple
+*  Different object to address different problem, some are build based on another.
 
-## Service Discovery, load balancing
+<img src="https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20201024124852.png" alt="20201024124852" style="width:300px"/>
 
-// 在Resilience之后　Resilience引出replica, 才能many to many 
+K8s terms we mentioned in this session all have corresponding object stored in K8s.
+
+## Service Discovery
+
+<img src="https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20201031151053.png" alt="20201031151053" style="width:550px"/>
+
+## Service Discovery
 
 Service discovery is the process of automatically detecting devices and services on a network
 
-// When you break down your monolithic application to several focused microservices, you will have to find an efficient way to locate your services
+When break down your monolithic application to several focused microservices, what's the efficient way to locate your services?
 
-![20200614192449](https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20200614192449.png)
-
-Solve the many to find many problem
+Underlying problem: retrieve any one from a group.
 
 ## Naive solution
 
@@ -417,6 +448,29 @@ Hardcode all IP address, downside
 *  Didn't do liveness check of B
 
 // Need to restart A after changes in B
+
+## Better solution: Order Uber eats
+
+<img src="https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20201031151437.png" alt="20201031151437" style="width:500px"/>
+
+*  We don't know any of delivery guy
+*  How we choose one deliver food for us?
+
+We need a service registry: who know all delivery guys working ATM.
+
+## Server side discovery
+
+<img src="https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20201031151804.png" alt="20201031151804" style="width:800px"/>
+
+Kubernetes adopt this idea.
+
+## Client side discovery
+
+<img src="https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20201031152034.png" alt="20201031152034" style="width:700px"/>
+
+// https://searchapparchitecture.techtarget.com/tip/Fundamental-patterns-for-service-discovery-in-microservices
+
+Client side discovery means Uber eats give us list of dilivery guys's phone number, we need to call one of them.
 
 ## How we solve it in K8s
 
@@ -436,7 +490,6 @@ kubectl run --restart=Never -l app=k8s-talks --image=gcr.io/kuar-demo/kuard-amd6
 ## K8s Service
 
 .code resource/service.yaml
-
 
 ## K8s Service Demo
 
@@ -736,12 +789,18 @@ gcloud container clusters update k8s-talks --enable-autoscaling --min-nodes=3 --
 
 ## What's next?
 
-*  Online playground k8s
-*  K8s up and running: take advantage of GCP,  & Azure, download book for free
-*  K8s in action
+##  Learn Kubernetes Basics(Official Interactive Tutorial)
 
-API team channel support?
+<img src="https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20201031152739.png" alt="20201031152739" style="width:800px"/>
 
-## Reference
+https://kubernetes.io/docs/tutorials/kubernetes-basics/
 
-.link https://stackoverflow.com/questions/31932945/does-go-have-something-like-threadlocal-from-java Does Go have something like ThreadLocal from Java?  
+## K8s up and running, 2rd
+
+<img src="https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20201031152920.png" alt="20201031152920" style="width:350px"/>
+
+## K8s in action
+
+<img src="https://raw.githubusercontent.com/eliteGoblin/images/master/blog/img/picgo/20201031153045.png" alt="20201031153045" style="width:350px"/>
+
+Best K8s book(2rd is coming)
